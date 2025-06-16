@@ -1,15 +1,28 @@
 #!/bin/bash
 
-service mysql start 
+pkill -f mysqld || true
+rm -f /var/lib/mysql/aria_log_control
+rm -f /var/lib/mysql/ibdata1.lock
+rm -f /var/run/mysqld/mysqld.pid
 
-echo "CREATE DATABASE IF NOT EXISTS $db1_name ;" > db1.sql
-echo "CREATE USER IF NOT EXISTS '$db1_user'@'%' IDENTIFIED BY '$db1_pwd' ;" >> db1.sql
-echo "GRANT ALL PRIVILEGES ON $db1_name.* TO '$db1_user'@'%' ;" >> db1.sql
-echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '12345' ;" >> db1.sql
-echo "FLUSH PRIVILEGES;" >> db1.sql
+chown -R mysql:mysql /var/lib/mysql
+chown -R mysql:mysql /var/run/mysqld
+chmod -R 755 /var/lib/mysql
 
-mysql < db1.sql
+if [ ! -d "/var/lib/mysql/mysql" ]; then
+    mysql_install_db --user=mysql --datadir=/var/lib/mysql
+fi
 
-kill $(cat /var/run/mysqld/mysqld.pid)
+mysqld --user=mysql --bootstrap --verbose=0 --skip-networking=0 <<EOF
+USE mysql;
+FLUSH PRIVILEGES;
+CREATE DATABASE IF NOT EXISTS $DB_NAME;
+CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD';
+GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '12345';
+FLUSH PRIVILEGES;
+EOF
 
-mysqld
+echo "Base de données initialisée avec succès"
+
+exec mysqld --user=mysql --datadir=/var/lib/mysql

@@ -6,9 +6,16 @@ SUDO    := $(shell [ $$(id -u) -ne 0 ] && echo sudo)
 DOCKER  := $(SUDO) docker
 COMPOSE := $(DOCKER) compose -f srcs/docker-compose.yml
 
-all: $(MDB_DIR) $(WP_DIR)
+HOSTS_ENTRY := "127.0.0.1 kbaridon.42.fr"
+
+all: hosts $(MDB_DIR) $(WP_DIR)
 	@echo "> Build & up"
-	@$(COMPOSE) up -d --build                # build si images absentes, sinon rapide
+	@$(COMPOSE) up -d --build
+
+hosts:
+	@if ! grep -q $(HOSTS_ENTRY) /etc/hosts ; then \
+		echo $(HOSTS_ENTRY) | $(SUDO) tee -a /etc/hosts > /dev/null; \
+	fi
 
 $(MDB_DIR) $(WP_DIR):
 	@$(SUDO) mkdir -p $@
@@ -24,4 +31,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re hosts
