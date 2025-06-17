@@ -32,7 +32,7 @@ done
 
 wp user create $WP_USER $WP_EMAIL --role=author --user_pass=$WP_PWD --allow-root
 
-wp theme install astra --activate --allow-root
+wp theme install neve --version=2.8.2 --activate --allow-root
 
 wp plugin install classic-editor --activate --allow-root
 wp plugin update --all --allow-root

@@ -19,20 +19,25 @@ cat > "$NGINX_SITE" <<EOF
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
-    server_name $DOMAIN www.$DOMAIN;
+    server_name ${DOMAIN} www.${DOMAIN};
 
-    ssl_certificate     $CERT_CRT;
-    ssl_certificate_key $CERT_KEY;
+    ssl_certificate     ${CERT_CRT};
+    ssl_certificate_key ${CERT_KEY};
     ssl_protocols       TLSv1.3;
 
     root  /var/www/wordpress;
     index index.php index.html index.htm;
 
-    location ~ [^/]\.php(/|$) {
-        try_files \$uri =404;
-        fastcgi_pass wordpress:9000;
+    location / {
+        try_files \$uri \$uri/ /index.php?\$args;
+    }
+
+    location ~ \.php\$ {
         include fastcgi_params;
+        fastcgi_pass wordpress:9000;
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_param PATH_INFO       \$fastcgi_path_info;
+        fastcgi_index index.php;
     }
 }
 EOF
