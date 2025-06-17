@@ -17,7 +17,7 @@ wp config create --dbname=$DB_NAME --dbuser=$DB_USER --dbpass=$DB_PASSWORD --dbh
 sleep 5
 
 for i in {1..3}; do
-    if wp core install --url=$DOMAIN_NAME \
+    if wp core install --url=https://$DOMAIN_NAME \
     --title="$WP_TITLE" \
     --admin_user=$WP_ADMIN_USR \
     --admin_password=$WP_ADMIN_PWD \
