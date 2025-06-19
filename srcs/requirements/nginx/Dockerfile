@@ -1,11 +1,14 @@
 FROM debian:bullseye
 
-RUN apt update && apt upgrade -y && apt install nginx -y && apt install openssl -y
+ENV DEBIAN_FRONTEND=noninteractive
 
-COPY conf/start.sh start.sh
+RUN apt-get update -y && apt-get upgrade -y \
+&& apt-get install --no-install-recommends -y nginx openssl \
+&& apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN chmod +x start.sh
+COPY conf/start.sh /start.sh
+RUN chmod +x /start.sh
 
 EXPOSE 80 443
 
-CMD ["./start.sh"]
+CMD ["/start.sh"]
