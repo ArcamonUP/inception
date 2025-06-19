@@ -9,10 +9,16 @@ curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.pha
 chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
 
 wp core download --allow-root
+
 wp config create --dbname="$DB_NAME" --dbuser="$DB_USER" \
                  --dbpass="$DB_PASSWORD" --dbhost=mariadb --allow-root
 
-sleep 5
+for i in {1..20}; do
+    if wp db check --allow-root > /dev/null 2>&1; then
+        break
+    fi
+    sleep 1
+done
 
 for i in {1..3}; do
     wp core install --url="https://$DOMAIN_NAME" \
@@ -26,6 +32,7 @@ for i in {1..3}; do
 done
 
 wp user create "$WP_USER" "$WP_EMAIL" --role=author --user_pass="$WP_PWD" --allow-root
+
 wp theme install neve --version=2.8.2 --activate --allow-root
 wp plugin install classic-editor --activate --allow-root
 wp plugin update --all --allow-root
