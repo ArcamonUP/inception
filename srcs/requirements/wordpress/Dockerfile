@@ -1,6 +1,6 @@
-FROM debian:buster
+FROM debian:bullseye
 
-RUN apt update -y && apt upgrade -y && apt-get install curl -y && apt-get install php-mysql php-fpm -y
+RUN apt-get update -y && apt-get upgrade -y && apt-get install --no-install-recommends -y curl php-mysql php-fpm && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY conf/config.sh config.sh
 
