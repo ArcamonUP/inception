@@ -1,7 +1,5 @@
 FROM debian:bullseye
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update -y && apt-get install --no-install-recommends \
 -y ca-certificates curl php7.4-fpm php7.4-mysql && \
 apt-get clean && rm -rf /var/lib/apt/lists/*
