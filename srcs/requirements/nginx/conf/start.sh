@@ -1,13 +1,13 @@
 #!/bin/bash
-
 set -euo pipefail
 
 DOMAIN="${DOMAIN_NAME:-kbaridon.42.fr}"
-CERT_CRT="${CERTS_:-/etc/ssl/certs/nginx-selfsigned.crt}"
-CERT_KEY="/etc/ssl/private/nginx-selfsigned.key"
+CERT_CRT="${CERT_CRT:-/etc/ssl/certs/nginx-selfsigned.crt}"
+CERT_KEY="${CERT_KEY:-/etc/ssl/private/nginx-selfsigned.key}"
 NGINX_SITE="/etc/nginx/sites-available/default"
 
 if [[ ! -f "$CERT_CRT" || ! -f "$CERT_KEY" ]]; then
+  mkdir -p "$(dirname "$CERT_KEY")"
   openssl req -x509 -nodes -days 365 \
     -newkey rsa:2048 \
     -keyout "$CERT_KEY" \
@@ -17,8 +17,14 @@ fi
 
 cat > "$NGINX_SITE" <<EOF
 server {
-    listen 443 ssl;
-    listen [::]:443 ssl;
+    listen 80;
+    listen [::]:80;
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
     server_name ${DOMAIN} www.${DOMAIN};
 
     ssl_certificate     ${CERT_CRT};
@@ -33,13 +39,11 @@ server {
     }
 
     location ~ \.php\$ {
-        include fastcgi_params;
+        include fastcgi.conf;
         fastcgi_pass wordpress:9000;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-        fastcgi_param PATH_INFO       \$fastcgi_path_info;
-        fastcgi_index index.php;
     }
 }
 EOF
 
+nginx -t
 exec nginx -g "daemon off;"
