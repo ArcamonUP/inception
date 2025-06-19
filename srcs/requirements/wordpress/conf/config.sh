@@ -1,6 +1,8 @@
 #!/bin/bash
 
-sleep 10
+until mysql -h "$DB_NAME" -u "$DB_USER" -p "$DB_PASSWORD" -e "SELECT 1;" > /dev/null > 2>&1; do
+    sleep 1
+done
 
 mkdir -p /var/www/wordpress
 cd /var/www/wordpress
