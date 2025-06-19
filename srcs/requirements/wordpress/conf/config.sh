@@ -20,17 +20,24 @@ for i in {1..20}; do
     sleep 1
 done
 
-wp core install --url="https://$DOMAIN_NAME" \
+if ! wp core is-installed --allow-root; then
+    wp core install --url="https://$DOMAIN_NAME" \
                     --title="$WP_TITLE" \
                     --admin_user="$WP_ADMIN_USR" \
                     --admin_password="$WP_ADMIN_PWD" \
                     --admin_email="$WP_ADMIN_EMAIL" \
                     --skip-email --allow-root
+fi
 
-wp user create "$WP_USER" "$WP_EMAIL" --role=author --user_pass="$WP_PWD" --allow-root
+wp user get "$WP_USER" --field=user_login --allow-root > /dev/null 2>&1 \
+|| wp user create "$WP_USER" "$WP_EMAIL" --role=author --user_pass="$WP_PWD" --allow-root
 
+wp theme is-installed astra --allow-root || \
 wp theme install astra --activate --allow-root
+
+wp theme is-installed classic-editor --allow-root || \
 wp plugin install classic-editor --activate --allow-root
+
 wp plugin update --all --allow-root
 
 chown -R www-data:www-data /var/www/wordpress
