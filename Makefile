@@ -1,11 +1,12 @@
 DATA_DIR := /home/kbaridon/data
 MDB_DIR  := $(DATA_DIR)/mariadb
 WP_DIR   := $(DATA_DIR)/wordpress
+HOST_DIR := /etc/hosts
 
 SUDO    := $(shell [ $$(id -u) -ne 0 ] && echo sudo)
 COMPOSE := docker compose -f srcs/docker-compose.yml
 
-all: add-host $(MDB_DIR) $(WP_DIR)
+all: $(MDB_DIR) $(WP_DIR) $(HOST_DIR) add-host
 	@echo "> Build & up"
 	@$(COMPOSE) up -d --build
 
@@ -13,7 +14,7 @@ add-host:
 	@grep -q "127.0.0.1 $(DOMAIN_NAME)" /etc/hosts || \
 		{ echo "127.0.0.1 $(DOMAIN_NAME)" | $(SUDO) tee -a /etc/hosts > /dev/null; }
 
-$(MDB_DIR) $(WP_DIR):
+$(MDB_DIR) $(WP_DIR) $(HOST_DIR):
 	@$(SUDO) mkdir -p $@
 
 clean:
