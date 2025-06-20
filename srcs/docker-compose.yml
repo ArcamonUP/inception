@@ -28,6 +28,7 @@ services:
       - wordpress:/var/www/wordpress
     ports:
       - "443:443"
+      - "80:80"
     restart: on-failure
   wordpress:
     image: wordpress
