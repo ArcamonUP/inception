@@ -17,12 +17,6 @@ fi
 
 cat > "$NGINX_SITE" <<EOF
 server {
-    listen 80;
-    listen [::]:80;
-    return 301 https://\$host\$request_uri;
-}
-
-server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
     server_name ${DOMAIN} www.${DOMAIN};

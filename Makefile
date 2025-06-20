@@ -11,9 +11,8 @@ all: add-host $(MDB_DIR) $(WP_DIR)
 	@$(COMPOSE) up -d --build
 
 add-host:
-	@grep -q "$(DOMAIN)" /etc/hosts || { \
-		echo "Ajout de $(DOMAIN) dans /etc/hosts"; \
-		echo "127.0.0.1 $(DOMAIN)" | $(SUDO) tee -a /etc/hosts > /dev/null; }
+	@grep -q "$(DOMAIN)" /etc/hosts || \
+	{ echo "127.0.0.1 $(DOMAIN)" | $(SUDO) tee -a /etc/hosts > /dev/null; }
 
 $(MDB_DIR) $(WP_DIR):
 	@$(SUDO) mkdir -p $@
