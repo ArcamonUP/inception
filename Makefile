@@ -3,7 +3,7 @@ MDB_DIR  := $(DATA_DIR)/mariadb
 WP_DIR   := $(DATA_DIR)/wordpress
 
 SUDO    := $(shell [ $$(id -u) -ne 0 ] && echo sudo)
-COMPOSE := $(SUDO) docker compose -f srcs/docker-compose.yml
+COMPOSE := sudo docker compose -f srcs/docker-compose.yml
 
 all: $(MDB_DIR) $(WP_DIR)
 	@echo "> Build & up"
@@ -14,11 +14,11 @@ $(MDB_DIR) $(WP_DIR):
 
 clean:
 	@echo "> Arrêt des conteneurs + suppression réseaux orphelins (images et volumes conservés)…"
-	@$(SUDO) docker compose -f srcs/docker-compose.yml down --remove-orphans
+	@sudo docker compose -f srcs/docker-compose.yml down --remove-orphans
 
 fclean: clean
 	@echo "> Suppression images, volumes et dossiers data…"
-	@$(SUDO) docker system prune -a -f
+	@sudo docker system prune -a -f
 	@$(SUDO) rm -rf $(MDB_DIR) $(WP_DIR)
 
 re: fclean all
