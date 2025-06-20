@@ -7,6 +7,6 @@ RUN apt-get update -y && apt-get upgrade -y \
 COPY conf/start.sh /start.sh
 RUN chmod +x /start.sh
 
-EXPOSE 80 443
+EXPOSE 443
 
 CMD ["/start.sh"]
