@@ -5,7 +5,7 @@ WP_DIR   := $(DATA_DIR)/wordpress
 SUDO    := $(shell [ $$(id -u) -ne 0 ] && echo sudo)
 COMPOSE := docker compose -f srcs/docker-compose.yml
 
-all: add_host $(MDB_DIR) $(WP_DIR)
+all: add-host $(MDB_DIR) $(WP_DIR)
 	@echo "> Build & up"
 	@$(COMPOSE) up -d --build
 
