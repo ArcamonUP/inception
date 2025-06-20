@@ -21,6 +21,4 @@ ALTER USER 'root'@'localhost' IDENTIFIED BY '12345';
 FLUSH PRIVILEGES;
 EOF
 
-echo "Base de données initialisée avec succès"
-
 exec mysqld --user=mysql --datadir=/var/lib/mysql
